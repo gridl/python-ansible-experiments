@@ -1,0 +1,41 @@
+---
+
+- name: Run show commands on routers
+  hosts: cisco-routers
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect facts
+      ios_facts:
+        gather_subset:
+          - "!hardware"
+        provider: "{{ cli }}"
+
+    - name: run sh ip int br
+      ios_command:
+        commands: show ip int br
+        provider: "{{ cli }}"
+      register: sh_ip_int_br_result
+
+
+    - name: Set hostname fact
+      set_fact:
+        all_interfaces: "{{ sh_ip_int_br_result.stdout[0] | regex_findall('(\\S+) +([\\d.]+) +') }}"
+
+    - name: Set hostname fact
+      set_fact:
+        hostname: "{{ ansible_net_config | regex_findall('hostname (.+)') | first }}"
+
+
+    - name: Generate template
+      template:
+        src: templates/sh_ip_int_br_ios_command.j2
+        dest: csv_parts/{{hostname}}_result.csv
+
+
+    - name: Write all files to CSV
+      assemble:
+        src: csv_parts/
+        dest: final_result.csv
+

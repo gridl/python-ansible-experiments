@@ -1,0 +1,42 @@
+---
+
+- name: Run show commands on routers
+  hosts: cisco-routers
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect facts
+      ios_facts:
+        gather_subset:
+          - "!hardware"
+        provider: "{{ cli }}"
+
+    - name: Run sh ip int br
+      ntc_show_command:
+        connection: ssh
+        platform: "cisco_ios"
+        command: "sh ip int br"
+        host: "{{ inventory_hostname }}"
+        username: "cisco"
+        password: "cisco"
+        template_dir: "library/ntc-ansible/ntc-templates/templates"
+      register: result
+
+
+    - name: Set hostname fact
+      set_fact:
+        hostname: "{{ ansible_net_config | regex_findall('hostname (.+)') | first }}"
+
+
+    - name: Generate template
+      template:
+        src: templates/sh_ip_int_br_ntc.j2
+        dest: csv_parts/{{hostname}}_result.csv
+
+
+    - name: Write all files to CSV
+      assemble:
+        src: csv_parts/
+        dest: final_result.csv
+

@@ -1,0 +1,5 @@
+{% for d in result.response %}
+{% if d['ipaddr'] | ipaddr %}
+"{{ hostname }}", "{{ d['intf'] }}", "{{ d['ipaddr'] }}"
+{% endif %}
+{% endfor %}
