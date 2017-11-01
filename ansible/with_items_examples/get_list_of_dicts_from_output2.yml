@@ -1,0 +1,34 @@
+---
+
+- name: Run show commands on routers
+  hosts: 192.168.100.1
+  gather_facts: false
+  connection: local
+
+  tasks:
+
+    - name: Get active interfaces
+      ios_command:
+        commands:
+          - show ip int br | ex unassigned
+        provider: "{{ cli }}"
+      register: interfaces_out
+
+
+    - name: Get packets input stats
+      ios_command:
+        commands:
+          - "show interface {{ item }} | include packets input"
+        provider: "{{ cli }}"
+      with_items: "{{ interfaces_out.stdout[0] | regex_findall('(\\S+[0-9]/[0-9]) ')}}"
+      register: show_result
+
+
+    - name: set conf fact
+      set_fact:
+        conf: "{{ conf | default([]) + [{item.item: item.stdout[0] | regex_findall('(\\d+) packets')}] }}"
+      with_items: "{{show_result.results}}"
+
+
+    - name: Debug
+      debug: var=conf
