@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#на основе примера https://github.com/natenka/pyneng-examples-exercises/blob/master/examples/12_useful_modules/argparse/parse_dhcp_snooping.py
 import argparse
 import click
 

@@ -1,3 +1,4 @@
+#на основе примера https://github.com/natenka/pyneng-examples-exercises/blob/master/examples/12_useful_modules/argparse/ping_function.py
 import subprocess
 
 import click
