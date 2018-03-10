@@ -36,9 +36,9 @@ result = ''
 while True:
     output = t.read_very_eager().decode('utf-8')
     #print('"{}"'.format(output))
+    result += output
     if '#' in output:
         break
-    result += output
     t.write(b' ')
     time.sleep(1)
 
