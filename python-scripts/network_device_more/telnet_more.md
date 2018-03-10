@@ -1,14 +1,14 @@
-'''
+
 На некоторых устройствах нельзя избавиться от постраничного просмотра (paging) команды и надо нажимать пробел или подобное.
 В циско это выглядит так (если отключение есть, это делается командой terminal length 0):
-
+```
 mmi polling-interval 60
 no mmi auto-configure
  --More--
+```
 
 Пример считывания команды sh run без отключения paging.
-'''
-
+```python
 import telnetlib
 import time
 
@@ -43,3 +43,4 @@ while True:
     time.sleep(1)
 
 print(result)
+```
